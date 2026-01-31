@@ -1,0 +1,55 @@
+﻿@model IEnumerable<WAMS.Models.EmployeeRequest>
+
+@{
+	ViewData["Title"] = "My Leave Requests";
+	Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
+}
+
+<h2 class="mb-3">My Leave Requests</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">
+	<i class="bi bi-plus-circle"></i> New Leave Request
+</a>
+
+<table class="table table-bordered table-hover">
+	<thead class="table-light">
+		<tr>
+			<th>Start Date</th>
+			<th>End Date</th>
+			<th>Status</th>
+			<th>Created</th>
+			<th style="width: 220px;">Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+	@foreach (var item in Model)
+	{
+		<tr>
+			<td>@item.StartDate.ToShortDateString()</td>
+			<td>@item.EndDate.ToShortDateString()</td>
+			<td>
+				<span class="badge bg-secondary">@item.Status</span>
+			</td>
+			<td>@item.CreatedAt.ToLocalTime()</td>
+			<td>
+				<a asp-action="Details" asp-route-id="@item.Id"
+				   class="btn btn-sm btn-info">View</a>
+
+				@if (item.Status == LeaveStatus.Draft)
+				{
+					<a asp-action="Edit" asp-route-id="@item.Id"
+					   class="btn btn-sm btn-warning">Edit</a>
+
+					<form asp-action="Submit" asp-route-id="@item.Id"
+						  method="post" class="d-inline">
+						@Html.AntiForgeryToken()
+						<button type="submit" class="btn btn-sm btn-success">
+							Submit
+						</button>
+					</form>
+				}
+			</td>
+		</tr>
+	}
+	</tbody>
+</table>

@@ -1,0 +1,199 @@
+﻿@{
+    ViewData["Title"] = "About | FlowApprove";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            margin: 0;
+            background-color: #f4f6f9;
+            color: #2f3542;
+        }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, #2a5298, #1e3c72);
+            color: #fff;
+            padding: 110px 20px 90px;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 820px;
+            margin: auto;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+        }
+
+        /* SECTION */
+        .section {
+            max-width: 1200px;
+            margin: 70px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+            .section-title h2 {
+                font-size: 2.2rem;
+                margin-bottom: 10px;
+            }
+
+            .section-title p {
+                color: #57606f;
+                background-color: #ffffff;
+                padding: 6px 14px;
+                border-radius: 999px;
+                display: inline-block;
+                box-shadow: 0 0 0 1px rgba(0,0,0,0.04);
+            }
+
+        /* ABOUT GRID */
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .about-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 30px 25px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        }
+
+            .about-card i {
+                font-size: 2.5rem;
+                color: #2a5298;
+                margin-bottom: 15px;
+            }
+
+            .about-card h4 {
+                margin-bottom: 10px;
+                color: #1e3c72;
+            }
+
+            .about-card p {
+                font-size: 0.95rem;
+                color: #57606f;
+            }
+
+        /* MISSION */
+        .mission {
+            background: #e9eef8;
+            padding: 70px 20px;
+            text-align: center;
+        }
+
+            .mission h2 {
+                font-size: 2rem;
+                margin-bottom: 20px;
+                color: #1e3c72;
+            }
+
+            .mission p {
+                max-width: 800px;
+                margin: auto;
+                font-size: 1.1rem;
+                color: #2f3542;
+            }
+
+        @@media(max-width: 768px) {
+            .hero h1 {
+                font-size: 2.3rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>About FlowApprove</h1>
+            <p>A modern workflow approval system built for accountability, clarity, and control.</p>
+        </div>
+    </section>
+
+    <!-- ABOUT OVERVIEW -->
+    <section class="section">
+        <div class="section-title">
+            <h2>Why FlowApprove?</h2>
+            <p>Designed for structured decision-making</p>
+        </div>
+
+        <div class="about-grid">
+            <div class="about-card">
+                <i class="fas fa-sitemap"></i>
+                <h4>Structured Workflows</h4>
+                <p>
+                    FlowApprove replaces informal approval methods with clearly defined,
+                    role-based workflows that reduce errors and delays.
+                </p>
+            </div>
+
+            <div class="about-card">
+                <i class="fas fa-user-shield"></i>
+                <h4>Accountability First</h4>
+                <p>
+                    Every approval, rejection, and comment is tracked, timestamped,
+                    and linked to the responsible user.
+                </p>
+            </div>
+
+            <div class="about-card">
+                <i class="fas fa-chart-line"></i>
+                <h4>Insight & Reporting</h4>
+                <p>
+                    Built-in dashboards and reports give management real-time visibility
+                    into approval performance and bottlenecks.
+                </p>
+            </div>
+
+            <div class="about-card">
+                <i class="fas fa-lock"></i>
+                <h4>Enterprise-Grade Security</h4>
+                <p>
+                    Role-based access control ensures users only see and act on
+                    what they are authorised to.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MISSION -->
+    <section class="mission">
+        <h2>Our Mission</h2>
+        <p>
+            To empower organisations with a transparent, secure, and auditable approval
+            platform that improves decision-making, enforces policy compliance,
+            and scales effortlessly with business growth.
+        </p>
+    </section>
+
+</body>
+</html>

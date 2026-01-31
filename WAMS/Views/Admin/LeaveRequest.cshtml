@@ -1,0 +1,60 @@
+﻿@model IEnumerable<WAMS.Models.EmployeeRequest>
+
+@{
+    ViewData["Title"] = "Leave Requests";
+    Layout = "_AdminLayout";
+}
+
+<h2 class="mb-4">📄 Leave Requests</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Employee</th>
+                    <th>Dates</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">
+                            No leave requests found.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    int index = 1;
+                    foreach (var request in Model)
+                    {
+                        <tr>
+                            <td>@index</td>
+                            <td>@request.Employee?.FullName</td>
+                            <td>
+                                @request.StartDate.ToShortDateString()
+                                -
+                                @request.EndDate.ToShortDateString()
+                            </td>
+                            <td>
+                                <span class="badge
+                                            @(request.Status.ToString().Contains("Approved") ? "bg-success" :
+                                                                            request.Status.ToString().Contains("Rejected") ? "bg-danger" :
+                                                                            "bg-warning text-dark")">
+                                    @request.Status
+                                </span>
+                            </td>
+                            <td>@request.CreatedAt.ToShortDateString()</td>
+                        </tr>
+                        index++;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

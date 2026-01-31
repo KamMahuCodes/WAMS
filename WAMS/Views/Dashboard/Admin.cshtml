@@ -1,0 +1,243 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Dashboard</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Animate Number library -->
+    <script src="https://cdn.jsdelivr.net/npm/countup.js@2.4.0/dist/countUp.min.js"></script>
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .card {
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+
+            .card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            }
+
+        .sparkline {
+            height: 50px;
+        }
+
+        .metric-icon {
+            font-size: 1.5rem;
+        }
+
+        .table-responsive {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-4">
+        <!-- Top Row: Key Metrics -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="card p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5>Users</h5>
+                            <h2 id="usersCount">0</h2>
+                        </div>
+                        <div class="metric-icon text-primary">
+                            👤
+                        </div>
+                    </div>
+                    <canvas id="usersSparkline" class="sparkline"></canvas>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5>Requests</h5>
+                            <h2 id="requestsCount">0</h2>
+                        </div>
+                        <div class="metric-icon text-success">
+                            📄
+                        </div>
+                    </div>
+                    <canvas id="requestsSparkline" class="sparkline"></canvas>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5>Approved</h5>
+                            <h2 id="approvedCount">0</h2>
+                        </div>
+                        <div class="metric-icon text-success">
+                            ✅
+                        </div>
+                    </div>
+                    <canvas id="approvedSparkline" class="sparkline"></canvas>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5>Rejected</h5>
+                            <h2 id="rejectedCount">0</h2>
+                        </div>
+                        <div class="metric-icon text-danger">
+                            ❌
+                        </div>
+                    </div>
+                    <canvas id="rejectedSparkline" class="sparkline"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Row: Interactive Charts -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+                <div class="card p-3">
+                    <h5>Requests by Month</h5>
+                    <canvas id="requestsChart" height="150"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card p-3">
+                    <h5>Request Status Distribution</h5>
+                    <canvas id="statusChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Row: Table -->
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="card p-3">
+                    <h5>Recent Requests</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>User</th>
+                                    <th>Request Type</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>John Doe</td>
+                                    <td>Leave</td>
+                                    <td><span class="badge bg-success">Approved</span></td>
+                                    <td>2026-01-17</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Jane Smith</td>
+                                    <td>Purchase</td>
+                                    <td><span class="badge bg-danger">Rejected</span></td>
+                                    <td>2026-01-16</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Mark Lee</td>
+                                    <td>Leave</td>
+                                    <td><span class="badge bg-warning text-dark">Pending</span></td>
+                                    <td>2026-01-15</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Animated Counters
+        const usersCount = new CountUp('usersCount', 245);
+        const requestsCount = new CountUp('requestsCount', 102);
+        const approvedCount = new CountUp('approvedCount', 76);
+        const rejectedCount = new CountUp('rejectedCount', 26);
+        usersCount.start();
+        requestsCount.start();
+        approvedCount.start();
+        rejectedCount.start();
+
+        // Sparkline Charts
+        const sparklineOptions = {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 7}, (_, i) => `Day ${i+1}`),
+                datasets: [{
+                    data: Array.from({length:7}, () => Math.floor(Math.random()*50)+10),
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0,123,255,0.2)',
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { x: { display: false }, y: { display: false } }
+            }
+        };
+        new Chart(document.getElementById('usersSparkline'), sparklineOptions);
+        new Chart(document.getElementById('requestsSparkline'), {...sparklineOptions, data:{...sparklineOptions.data,datasets:[{...sparklineOptions.data.datasets[0],borderColor:'#28a745',backgroundColor:'rgba(40,167,69,0.2)'}]}});
+        new Chart(document.getElementById('approvedSparkline'), {...sparklineOptions, data:{...sparklineOptions.data,datasets:[{...sparklineOptions.data.datasets[0],borderColor:'#28a745',backgroundColor:'rgba(40,167,69,0.2)'}]}});
+        new Chart(document.getElementById('rejectedSparkline'), {...sparklineOptions, data:{...sparklineOptions.data,datasets:[{...sparklineOptions.data.datasets[0],borderColor:'#dc3545',backgroundColor:'rgba(220,53,69,0.2)'}]}});
+
+        // Requests by Month Chart
+        new Chart(document.getElementById('requestsChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+                datasets: [{
+                    label: 'Requests',
+                    data: [30, 45, 28, 55, 40, 60],
+                    backgroundColor: 'rgba(0,123,255,0.6)',
+                    borderColor: 'rgba(0,123,255,1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { tooltip: { mode: 'index', intersect: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // Status Distribution Pie Chart
+        new Chart(document.getElementById('statusChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Approved', 'Rejected', 'Pending'],
+                datasets: [{
+                    data: [76, 26, 10],
+                    backgroundColor: ['#28a745','#dc3545','#ffc107']
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+﻿@model WAMS.Models.ViewModels.HRDashboardViewModel
+@{
+	ViewData["Title"] = "HR Dashboard";
+	Layout = "~/Views/Shared/_HRLayout.cshtml";
+}
+
+<div class="container-fluid p-4">
+
+	<!-- METRICS -->
+	<div class="row g-4 mb-4">
+		<div class="col-md-4">
+			<div class="card p-3">
+				<h5>Pending HR Approvals</h5>
+				<h2 id="pendingHR">0</h2>
+			</div>
+		</div>
+
+		<div class="col-md-4">
+			<div class="card p-3">
+				<h5>Approved by HR</h5>
+				<h2 id="approvedHR">0</h2>
+			</div>
+		</div>
+
+		<div class="col-md-4">
+			<div class="card p-3">
+				<h5>Rejected by HR</h5>
+				<h2 id="rejectedHR">0</h2>
+			</div>
+		</div>
+	</div>
+
+	<!-- CHART -->
+	<div class="row g-4">
+		<div class="col-lg-6">
+			<div class="card p-3">
+				<h5>HR Decisions Overview</h5>
+				<canvas id="hrChart"></canvas>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script>
+		new CountUp('pendingHR', @Model.PendingHRApprovals).start();
+		new CountUp('approvedHR', @Model.ApprovedByHR).start();
+		new CountUp('rejectedHR', @Model.RejectedByHR).start();
+
+		new Chart(document.getElementById('hrChart'), {
+			type: 'doughnut',
+			data: {
+				labels: ['Approved', 'Rejected', 'Pending'],
+				datasets: [{
+					data: [
+						@Model.ApprovedByHR,
+						@Model.RejectedByHR,
+						@Model.PendingHRApprovals
+					],
+					backgroundColor: ['#198754', '#dc3545', '#ffc107']
+				}]
+			}
+		});
+	</script>
+}

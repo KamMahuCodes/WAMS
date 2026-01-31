@@ -1,0 +1,65 @@
+﻿@model WAMS.Models.ViewModels.ManagerDashboardViewModel
+@{
+    ViewData["Title"] = "Manager Dashboard";
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<div class="container-fluid p-4">
+
+    <!-- Metrics -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h5>Pending Team Requests</h5>
+                <h2 id="pendingTeam">0</h2>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h5>Approved by You</h5>
+                <h2 id="approvedMgr">0</h2>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h5>Rejected by You</h5>
+                <h2 id="rejectedMgr">0</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card p-3">
+                <h5>Manager Decisions</h5>
+                <canvas id="managerChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        new CountUp('pendingTeam', @Model.PendingTeamApprovals).start();
+        new CountUp('approvedMgr', @Model.ApprovedByManager).start();
+        new CountUp('rejectedMgr', @Model.RejectedByManager).start();
+
+        new Chart(document.getElementById('managerChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Approved', 'Rejected', 'Pending'],
+                datasets: [{
+                    data: [
+                        @Model.ApprovedByManager,
+                        @Model.RejectedByManager,
+                        @Model.PendingTeamApprovals
+                    ],
+                    backgroundColor: ['#28a745','#dc3545','#ffc107']
+                }]
+            }
+        });
+    </script>
+}

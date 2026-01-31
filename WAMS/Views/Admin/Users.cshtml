@@ -1,0 +1,49 @@
+﻿@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Users";
+    Layout = "_AdminLayout";
+}
+
+<h2 class="mb-4">👥 Users</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Manager</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">
+                            No users found.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    int index = 1;
+                    foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>@index</td>
+                            <td>@user.FullName</td>
+                            <td>@user.Email</td>
+                            <td>
+                                @(string.IsNullOrEmpty(user.ManagerId) ? "—" : user.ManagerId)
+                            </td>
+                        </tr>
+                        index++;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

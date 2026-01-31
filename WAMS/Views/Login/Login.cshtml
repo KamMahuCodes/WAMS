@@ -1,0 +1,128 @@
+﻿@model WAMS.ViewModels.Login
+@{
+    ViewData["Title"] = "Login";
+}
+
+<style>
+    /* PAGE BACKGROUND */
+    .login-page {
+        min-height: calc(100vh - 150px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* background: linear-gradient(135deg, #f5f7fb, #e9effa); */
+        padding: 40px 15px;
+
+
+    }
+
+    /* LOGIN CARD */
+    .login-card {
+        width: 100%;
+        max-width: 420px;
+        border: none;
+        border-radius: 18px;
+        box-shadow: 0 15px 40px rgba(13, 110, 253, 0.15);
+        overflow: hidden;
+    }
+
+    /* HEADER */
+    .login-header {
+        background: linear-gradient(135deg, #0d6efd, #003f9e);
+        color: #fff;
+        padding: 30px 25px;
+        text-align: center;
+    }
+
+        .login-header h3 {
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .login-header p {
+            font-size: 0.9rem;
+            opacity: 0.85;
+        }
+
+    /* BODY */
+    .login-body {
+        padding: 30px 28px;
+        background-color: #ffffff;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 10px 14px;
+    }
+
+    .btn-login {
+        background: linear-gradient(135deg, #0d6efd, #003f9e);
+        border: none;
+        border-radius: 30px;
+        font-weight: 600;
+        padding: 10px;
+    }
+
+        .btn-login:hover {
+            opacity: 0.95;
+        }
+
+    .login-footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 0.9rem;
+    }
+
+        .login-footer a {
+            font-weight: 600;
+            text-decoration: none;
+        }
+</style>
+
+<div class="login-page">
+    <div class="card login-card">
+
+        <!-- HEADER -->
+        <div class="login-header">
+            <i class="bi bi-shield-lock-fill fs-2 mb-2"></i>
+            <h3>Welcome Back</h3>
+            <p>Sign in to continue to FlowApprove</p>
+        </div>
+
+        <!-- BODY -->
+        <div class="login-body">
+            <form asp-action="Login" method="post" novalidate>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label fw-semibold"></label>
+                    <input asp-for="Email" class="form-control" placeholder="name@company.com" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label fw-semibold"></label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-check-label"></label>
+                </div>
+
+                <button type="submit" class="btn btn-login text-white w-100">
+                    <i class="bi bi-box-arrow-in-right me-1"></i>
+                    Sign In
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <small>
+                    Don’t have an account?
+                    <a asp-controller="Auth" asp-action="Register">Create one</a>
+                </small>
+            </div>
+        </div>
+
+    </div>
+</div>

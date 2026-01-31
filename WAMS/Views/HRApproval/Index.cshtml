@@ -1,0 +1,48 @@
+﻿@model IEnumerable<WAMS.Models.EmployeeRequest>
+
+@{
+	ViewData["Title"] = "HR Approvals";
+	Layout = "~/Views/Shared/_HRLayout.cshtml";
+}
+
+<h2 class="mb-3">Leave Requests Awaiting HR Approval</h2>
+
+<table class="table table-bordered table-hover">
+	<thead class="table-light">
+		<tr>
+			<th>Employee</th>
+			<th>Start Date</th>
+			<th>End Date</th>
+			<th>Submitted On</th>
+			<th>Status</th>
+			<th style="width: 120px;">Action</th>
+		</tr>
+	</thead>
+	<tbody>
+	@foreach (var item in Model)
+	{
+		<tr>
+			<td>@item.Employee?.FullName</td>
+			<td>@item.StartDate.ToShortDateString()</td>
+			<td>@item.EndDate.ToShortDateString()</td>
+			<td>@item.CreatedAt.ToLocalTime()</td>
+			<td>
+				<span class="badge bg-warning">Manager Approved</span>
+			</td>
+			<td>
+				<a asp-action="Details" asp-route-id="@item.Id"
+				   class="btn btn-sm btn-primary">
+					Review
+				</a>
+			</td>
+		</tr>
+	}
+	</tbody>
+</table>
+
+@if (!Model.Any())
+{
+	<div class="alert alert-info">
+		No leave requests pending HR approval.
+	</div>
+}

@@ -1,0 +1,101 @@
+﻿@model WAMS.Models.EmployeeRequest
+
+@{
+	ViewData["Title"] = "Review Leave Request";
+	Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<h2 class="mb-4">Leave Request Review</h2>
+
+<div class="row">
+	<div class="col-md-8">
+
+		<div class="card mb-4 shadow-sm">
+			<div class="card-body">
+				<h5 class="card-title">Employee Information</h5>
+				<hr />
+
+				<p><strong>Name:</strong> @Model.Employee?.FullName</p>
+				<p><strong>Email:</strong> @Model.Employee.Email</p>
+				<p><strong>Leave Period:</strong>
+					@Model.StartDate.ToShortDateString()
+					–
+					@Model.EndDate.ToShortDateString()
+				</p>
+				<p><strong>Reason:</strong></p>
+				<div class="border rounded p-3 bg-light">
+					@Model.Reason
+				</div>
+			</div>
+		</div>
+
+		@if (Model.ApprovalActions.Any())
+		{
+			<div class="card mb-4 shadow-sm">
+				<div class="card-body">
+					<h5 class="card-title">Approval History</h5>
+					<hr />
+					<ul class="list-group list-group-flush">
+						@foreach (var action in Model.ApprovalActions)
+						{
+							<li class="list-group-item">
+								<strong>@action.Approver.FullName</strong>
+								— @action.Decision
+								<span class="text-muted">
+									(@action.ActionedAt.ToShortDateString())
+								</span>
+								@if (!string.IsNullOrEmpty(action.Comment))
+								{
+									<div class="text-muted mt-1">
+										“@action.Comment”
+									</div>
+								}
+							</li>
+						}
+					</ul>
+				</div>
+			</div>
+		}
+
+		<div class="card shadow-sm">
+			<div class="card-body">
+				<h5 class="card-title">Manager Decision</h5>
+				<hr />
+
+				<form asp-action="Approve" method="post" class="mb-3">
+					<input type="hidden" name="id" value="@Model.Id" />
+
+					<div class="mb-3">
+						<label class="form-label">Comments (optional)</label>
+						<textarea name="comments" class="form-control" rows="3"></textarea>
+					</div>
+
+					<button type="submit" class="btn btn-success">
+						Approve
+					</button>
+				</form>
+
+				<form asp-action="Reject" method="post">
+					<input type="hidden" name="id" value="@Model.Id" />
+
+					<div class="mb-3">
+						<label class="form-label">Rejection Reason</label>
+						<textarea name="comments"
+								  class="form-control"
+								  rows="3"
+								  required></textarea>
+					</div>
+
+					<button type="submit" class="btn btn-danger">
+						Reject
+					</button>
+				</form>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<a asp-action="Index" class="btn btn-link mt-4">
+	← Back to list
+</a>

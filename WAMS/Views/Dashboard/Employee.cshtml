@@ -1,0 +1,65 @@
+﻿@model WAMS.Models.ViewModels.EmployeeDashboardViewModel
+@{
+    ViewData["Title"] = "Employee Dashboard";
+    Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
+}
+
+<div class="container-fluid p-4">
+
+    <!-- Metrics -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h5>My Pending Requests</h5>
+                <h2 id="myPending">0</h2>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h5>My Approved Requests</h5>
+                <h2 id="myApproved">0</h2>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h5>My Rejected Requests</h5>
+                <h2 id="myRejected">0</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card p-3">
+                <h5>My Request Status</h5>
+                <canvas id="employeeChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        new CountUp('myPending', @Model.MyPendingRequests).start();
+        new CountUp('myApproved', @Model.MyApprovedRequests).start();
+        new CountUp('myRejected', @Model.MyRejectedRequests).start();
+
+        new Chart(document.getElementById('employeeChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Approved', 'Rejected', 'Pending'],
+                datasets: [{
+                    data: [
+                        @Model.MyApprovedRequests,
+                        @Model.MyRejectedRequests,
+                        @Model.MyPendingRequests
+                    ],
+                    backgroundColor: ['#28a745','#dc3545','#ffc107']
+                }]
+            }
+        });
+    </script>
+}

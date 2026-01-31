@@ -1,0 +1,47 @@
+﻿@model WAMS.Models.EmployeeRequest
+
+@{
+	ViewData["Title"] = "Leave Request Details";
+	Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
+}
+
+<h2>Leave Request Details</h2>
+
+<div class="card mb-3">
+	<div class="card-body">
+		<p><strong>Start Date:</strong> @Model.StartDate.ToShortDateString()</p>
+		<p><strong>End Date:</strong> @Model.EndDate.ToShortDateString()</p>
+		<p><strong>Status:</strong> @Model.Status</p>
+		<p><strong>Reason:</strong></p>
+		<p>@Model.Reason</p>
+	</div>
+</div>
+
+@if (Model.ApprovalActions?.Any() == true)
+{
+	<h4>Approval History</h4>
+
+	<table class="table table-sm table-bordered">
+		<thead class="table-light">
+			<tr>
+				<th>Approver</th>
+				<th>Decision</th>
+				<th>Comment</th>
+				<th>Date</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var action in Model.ApprovalActions)
+			{
+				<tr>
+					<td>@action.Approver?.FullName</td>
+					<td>@action.Decision</td>
+					<td>@action.Comment</td>
+					<td>@action.ActionedAt.ToLocalTime()</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+<a asp-action="Index" class="btn btn-secondary">Back</a>
