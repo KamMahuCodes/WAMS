@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WAMS.Models;
 using WAMS.Models.ViewModels;
@@ -29,14 +30,10 @@ namespace WAMS.Controllers
 			return View();
 		}
 
-		// ============================
-		// POST: /Auth/Login
-		// ============================
 		[HttpPost]
+		[AllowAnonymous]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Login(
-			Login model,
-			string? returnUrl = null)
+		public async Task<IActionResult> Login(Login model, string? returnUrl = null)
 		{
 			if (!ModelState.IsValid)
 				return View(model);
@@ -49,8 +46,9 @@ namespace WAMS.Controllers
 				return View(model);
 			}
 
+			// ✅ Use this overload to ensure roles are loaded
 			var result = await _signInManager.PasswordSignInAsync(
-				user,
+				model.Email,
 				model.Password,
 				model.RememberMe,
 				lockoutOnFailure: true
@@ -58,9 +56,7 @@ namespace WAMS.Controllers
 
 			if (result.Succeeded)
 			{
-				if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-					return Redirect(returnUrl);
-
+				// Redirect based on role (DashboardController will select correct view)
 				return RedirectToAction("Index", "Dashboard");
 			}
 
@@ -73,6 +69,8 @@ namespace WAMS.Controllers
 			ModelState.AddModelError("", "Invalid login attempt.");
 			return View(model);
 		}
+
+
 
 		// ============================
 		// POST: /Auth/Logout

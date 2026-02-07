@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WAMS.Migrations
 {
     /// <inheritdoc />
-    public partial class WAMSDB : Migration
+    public partial class WAMS : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

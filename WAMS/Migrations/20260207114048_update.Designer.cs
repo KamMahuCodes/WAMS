@@ -12,8 +12,8 @@ using WAMS.Data;
 namespace WAMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260110233514_WAMSDB")]
-    partial class WAMSDB
+    [Migration("20260207114048_update")]
+    partial class update
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -192,7 +192,7 @@ namespace WAMS.Migrations
                     b.ToTable("ApprovalActions");
                 });
 
-            modelBuilder.Entity("WAMS.Models.LeaveRequest", b =>
+            modelBuilder.Entity("WAMS.Models.EmployeeRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -210,6 +210,9 @@ namespace WAMS.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ManagerId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Reason")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -223,6 +226,8 @@ namespace WAMS.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
+
+                    b.HasIndex("ManagerId");
 
                     b.ToTable("LeaveRequests");
                 });
@@ -361,7 +366,7 @@ namespace WAMS.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("WAMS.Models.LeaveRequest", "LeaveRequest")
+                    b.HasOne("WAMS.Models.EmployeeRequest", "LeaveRequest")
                         .WithMany("ApprovalActions")
                         .HasForeignKey("LeaveRequestId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -372,7 +377,7 @@ namespace WAMS.Migrations
                     b.Navigation("LeaveRequest");
                 });
 
-            modelBuilder.Entity("WAMS.Models.LeaveRequest", b =>
+            modelBuilder.Entity("WAMS.Models.EmployeeRequest", b =>
                 {
                     b.HasOne("WAMS.Models.User", "Employee")
                         .WithMany("LeaveRequests")
@@ -380,7 +385,13 @@ namespace WAMS.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("WAMS.Models.User", "Manager")
+                        .WithMany()
+                        .HasForeignKey("ManagerId");
+
                     b.Navigation("Employee");
+
+                    b.Navigation("Manager");
                 });
 
             modelBuilder.Entity("WAMS.Models.User", b =>
@@ -392,7 +403,7 @@ namespace WAMS.Migrations
                     b.Navigation("Manager");
                 });
 
-            modelBuilder.Entity("WAMS.Models.LeaveRequest", b =>
+            modelBuilder.Entity("WAMS.Models.EmployeeRequest", b =>
                 {
                     b.Navigation("ApprovalActions");
                 });

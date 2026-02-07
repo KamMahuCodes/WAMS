@@ -1,4 +1,5 @@
-﻿@{
+﻿@model WAMS.Models.ViewModels.Dashboard;
+@{
     ViewData["Title"] = "Admin Dashboard";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
@@ -54,7 +55,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h5>Users</h5>
-                            <h2 id="usersCount">0</h2>
+                            <h2 id="usersCount">@Model.Users</h2>
                         </div>
                         <div class="metric-icon text-primary">
                             👤
@@ -68,7 +69,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h5>Requests</h5>
-                            <h2 id="requestsCount">0</h2>
+                            <h2 id="requestsCount">@Model.PendingApprovals</h2>
                         </div>
                         <div class="metric-icon text-success">
                             📄
@@ -82,7 +83,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h5>Approved</h5>
-                            <h2 id="approvedCount">0</h2>
+                            <h2 id="approvedCount">@Model.ApprovedRequests</h2>
                         </div>
                         <div class="metric-icon text-success">
                             ✅
@@ -96,7 +97,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h5>Rejected</h5>
-                            <h2 id="rejectedCount">0</h2>
+                            <h2 id="rejectedCount">@Model.RejectedRequests</h2>
                         </div>
                         <div class="metric-icon text-danger">
                             ❌
@@ -132,36 +133,32 @@
                         <table class="table table-striped table-hover">
                             <thead class="table-light">
                                 <tr>
-                                    <th>#</th>
                                     <th>User</th>
-                                    <th>Request Type</th>
+                                    <th>Manager</th>
                                     <th>Status</th>
-                                    <th>Date</th>
+                                    <th>Date Sent</th>
+                                    <th>Reason</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>John Doe</td>
-                                    <td>Leave</td>
-                                    <td><span class="badge bg-success">Approved</span></td>
-                                    <td>2026-01-17</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Jane Smith</td>
-                                    <td>Purchase</td>
-                                    <td><span class="badge bg-danger">Rejected</span></td>
-                                    <td>2026-01-16</td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>Mark Lee</td>
-                                    <td>Leave</td>
-                                    <td><span class="badge bg-warning text-dark">Pending</span></td>
-                                    <td>2026-01-15</td>
-                                </tr>
+                                @foreach (var req in Model.RecentRequests)
+                                {
+                                    <tr>
+                                        <td>@req.EmployeeName</td>
+                                        <td>@req.ManagerName</td>
+                                        <td>
+                                            <span class="badge
+                                                @(req.Status.ToString().Contains("Approved") ? "bg-success" :
+                                                                    req.Status.ToString().Contains("Rejected") ? "bg-danger" : "bg-warning")">
+                                                @req.Status
+                                            </span>
+                                        </td>
+                                        <td>@req.CreatedAt.ToString("dd MMM yyyy")</td>
+                                        <td>@req.Reason</td>
+                                    </tr>
+                                }
                             </tbody>
+
                         </table>
                     </div>
                 </div>
@@ -170,74 +167,54 @@
     </div>
 
     <!-- Scripts -->
+    @using System.Text.Json
+
     <script>
-        // Animated Counters
-        const usersCount = new CountUp('usersCount', 245);
-        const requestsCount = new CountUp('requestsCount', 102);
-        const approvedCount = new CountUp('approvedCount', 76);
-        const rejectedCount = new CountUp('rejectedCount', 26);
-        usersCount.start();
-        requestsCount.start();
-        approvedCount.start();
-        rejectedCount.start();
-
-        // Sparkline Charts
-        const sparklineOptions = {
-            type: 'line',
-            data: {
-                labels: Array.from({length: 7}, (_, i) => `Day ${i+1}`),
-                datasets: [{
-                    data: Array.from({length:7}, () => Math.floor(Math.random()*50)+10),
-                    borderColor: '#007bff',
-                    backgroundColor: 'rgba(0,123,255,0.2)',
-                    tension: 0.3,
-                    fill: true,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { x: { display: false }, y: { display: false } }
-            }
-        };
-        new Chart(document.getElementById('usersSparkline'), sparklineOptions);
-        new Chart(document.getElementById('requestsSparkline'), {...sparklineOptions, data:{...sparklineOptions.data,datasets:[{...sparklineOptions.data.datasets[0],borderColor:'#28a745',backgroundColor:'rgba(40,167,69,0.2)'}]}});
-        new Chart(document.getElementById('approvedSparkline'), {...sparklineOptions, data:{...sparklineOptions.data,datasets:[{...sparklineOptions.data.datasets[0],borderColor:'#28a745',backgroundColor:'rgba(40,167,69,0.2)'}]}});
-        new Chart(document.getElementById('rejectedSparkline'), {...sparklineOptions, data:{...sparklineOptions.data,datasets:[{...sparklineOptions.data.datasets[0],borderColor:'#dc3545',backgroundColor:'rgba(220,53,69,0.2)'}]}});
-
+        // ===============================
         // Requests by Month Chart
+        // ===============================
+        const months = @Html.Raw(JsonSerializer.Serialize(Model.Months));
+        const requestCounts = @Html.Raw(JsonSerializer.Serialize(Model.RequestsPerMonth));
+
         new Chart(document.getElementById('requestsChart'), {
             type: 'bar',
             data: {
-                labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+                labels: months,
                 datasets: [{
                     label: 'Requests',
-                    data: [30, 45, 28, 55, 40, 60],
-                    backgroundColor: 'rgba(0,123,255,0.6)',
-                    borderColor: 'rgba(0,123,255,1)',
-                    borderWidth: 1
+                    data: requestCounts,
+                    backgroundColor: 'rgba(13,110,253,0.6)'
                 }]
             },
             options: {
                 responsive: true,
-                plugins: { tooltip: { mode: 'index', intersect: false } },
                 scales: { y: { beginAtZero: true } }
             }
         });
 
-        // Status Distribution Pie Chart
+        // ===============================
+        // Status Distribution Chart
+        // ===============================
         new Chart(document.getElementById('statusChart'), {
             type: 'doughnut',
             data: {
                 labels: ['Approved', 'Rejected', 'Pending'],
                 datasets: [{
-                    data: [76, 26, 10],
-                    backgroundColor: ['#28a745','#dc3545','#ffc107']
+                    data: [
+                        @Model.ApprovedRequests,
+                        @Model.RejectedRequests,
+                        @Model.PendingApprovals
+                    ],
+                    backgroundColor: ['#198754', '#dc3545', '#ffc107']
                 }]
             },
-            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } }
+            }
         });
     </script>
+
+
 </body>
 </html>

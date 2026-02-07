@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WAMS.Models
 {
@@ -7,8 +8,15 @@ namespace WAMS.Models
 		public int Id { get; set; }
 
 		[Required]
-		public string? EmployeeId { get; set; }
-		public User? Employee { get; set; }
+		public string EmployeeId { get; set; } = null!;
+
+		[ForeignKey(nameof(EmployeeId))]
+		public User Employee { get; set; } = null!;
+
+		public string? ManagerId { get; set; }
+
+		[ForeignKey(nameof(ManagerId))]
+		public User? Manager { get; set; }
 
 		[Required]
 		public DateTime StartDate { get; set; }
@@ -24,6 +32,6 @@ namespace WAMS.Models
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 		// Navigation
-		public ICollection<ApprovalAction>? ApprovalActions { get; set; }
+		public ICollection<ApprovalAction> ApprovalActions { get; set; } = new List<ApprovalAction>();
 	}
 }

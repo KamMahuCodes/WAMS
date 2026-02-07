@@ -1,8 +1,7 @@
-﻿@model IEnumerable<dynamic>
-
+﻿@model IEnumerable<WAMS.Models.ViewModels.UserList>
 @{
     ViewData["Title"] = "Users";
-    Layout = "_AdminLayout";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <h2 class="mb-4">👥 Users</h2>
@@ -36,9 +35,8 @@
                             <td>@index</td>
                             <td>@user.FullName</td>
                             <td>@user.Email</td>
-                            <td>
-                                @(string.IsNullOrEmpty(user.ManagerId) ? "—" : user.ManagerId)
-                            </td>
+                            <td>@(string.IsNullOrEmpty(user.ManagerName) ? "—" : user.ManagerName)</td>
+
                         </tr>
                         index++;
                     }

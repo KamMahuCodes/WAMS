@@ -58,6 +58,8 @@ namespace WAMS.Controllers
 					l.Status == LeaveStatus.ManagerRejected ||
 					l.Status == LeaveStatus.HRRejected);
 
+			model.Users = await _context.Users.CountAsync();
+
 			// ========================
 			// REQUESTS PER MONTH
 			// ========================
@@ -81,7 +83,21 @@ namespace WAMS.Controllers
 			model.Months = monthlyData.Select(m => m.Month).ToList();
 			model.RequestsPerMonth = monthlyData.Select(m => m.Count).ToList();
 
-			// ✅ RETURN THE POPULATED MODEL
+			model.RecentRequests = await _context.LeaveRequests
+			.Include(l => l.Employee)
+			.Include(l => l.Manager)
+			.OrderByDescending(l => l.CreatedAt)
+			.Take(5)
+			.Select(l => new RecentLeaveRequest
+			{
+				EmployeeName = l.Employee.FullName,
+				ManagerName = l.Manager.FullName,
+				Status = l.Status,
+				CreatedAt = l.CreatedAt,
+				Reason = l.Reason
+			})
+			.ToListAsync();
+
 			return model;
 		}
 

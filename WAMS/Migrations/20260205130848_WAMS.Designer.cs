@@ -12,8 +12,8 @@ using WAMS.Data;
 namespace WAMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260131125102_update")]
-    partial class update
+    [Migration("20260205130848_WAMS")]
+    partial class WAMS
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

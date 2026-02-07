@@ -11,21 +11,21 @@
         <div class="col-md-4">
             <div class="card p-3">
                 <h5>Pending Team Requests</h5>
-                <h2 id="pendingTeam">0</h2>
+                <h2 id="pendingTeam">@Model.PendingTeamApprovals</h2>
             </div>
         </div>
 
         <div class="col-md-4">
             <div class="card p-3">
                 <h5>Approved by You</h5>
-                <h2 id="approvedMgr">0</h2>
+                <h2 id="approvedMgr">@Model.ApprovedByManager</h2>
             </div>
         </div>
 
         <div class="col-md-4">
             <div class="card p-3">
                 <h5>Rejected by You</h5>
-                <h2 id="rejectedMgr">0</h2>
+                <h2 id="rejectedMgr">@Model.RejectedByManager</h2>
             </div>
         </div>
     </div>

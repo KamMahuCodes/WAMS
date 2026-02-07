@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Leave Requests";
-    Layout = "_AdminLayout";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <h2 class="mb-4">📄 Leave Requests</h2>
@@ -17,6 +17,7 @@
                     <th>Dates</th>
                     <th>Status</th>
                     <th>Created</th>
+                    <th>Reason</th>
                 </tr>
             </thead>
             <tbody>
@@ -50,6 +51,7 @@
                                 </span>
                             </td>
                             <td>@request.CreatedAt.ToShortDateString()</td>
+                            <td>@request.Reason</td>
                         </tr>
                         index++;
                     }

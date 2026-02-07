@@ -207,6 +207,9 @@ namespace WAMS.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ManagerId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Reason")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -220,6 +223,8 @@ namespace WAMS.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
+
+                    b.HasIndex("ManagerId");
 
                     b.ToTable("LeaveRequests");
                 });
@@ -377,7 +382,13 @@ namespace WAMS.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("WAMS.Models.User", "Manager")
+                        .WithMany()
+                        .HasForeignKey("ManagerId");
+
                     b.Navigation("Employee");
+
+                    b.Navigation("Manager");
                 });
 
             modelBuilder.Entity("WAMS.Models.User", b =>

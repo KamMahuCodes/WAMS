@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WAMS.Data;
 using WAMS.Models;
+using WAMS.Models.ViewModels;
 
 namespace WAMS.Controllers
 {
@@ -25,16 +26,17 @@ namespace WAMS.Controllers
 		{
 			// Fetch all users
 			var users = await _context.Users
-				.Select(u => new
+				.Include(u => u.Manager)
+				.Select(u => new UserList
 				{
-					u.Id,
-					u.FullName,
-					u.Email,
-					u.ManagerId
+					Id = u.Id,
+					FullName = u.FullName,
+					Email = u.Email,
+					ManagerName = u.Manager != null ? u.Manager.FullName : null
 				})
 				.ToListAsync();
 
-			return View(users); // Pass users to the view
+			return View(users);
 		}
 
 		// ============================
@@ -58,17 +60,16 @@ namespace WAMS.Controllers
 		// ============================
 		public async Task<IActionResult> Reports()
 		{
-			// Example: Group leave requests by status
 			var reportData = await _context.LeaveRequests
 				.GroupBy(l => l.Status)
-				.Select(g => new
+				.Select(g => new LeaveStatusReport
 				{
 					Status = g.Key,
 					Count = g.Count()
 				})
 				.ToListAsync();
 
-			return View(reportData); // Pass report data to the view
+			return View(reportData);
 		}
 
 		// ============================
