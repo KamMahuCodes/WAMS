@@ -17,26 +17,31 @@ namespace WAMS.Services
 
 		public async Task SendAsync(string to, string subject, string body)
 		{
-			var client = new SmtpClient(_settings.SmtpServer, _settings.Port)
+			try
 			{
-				Credentials = new NetworkCredential(
-					_settings.Username,
-					_settings.Password),
-				EnableSsl = true
-			};
+				using var client = new SmtpClient(_settings.SmtpServer, _settings.Port)
+				{
+					Credentials = new NetworkCredential("mahubookings@gmail.com", "Passwo"),
+					EnableSsl = true
+				};
 
-			var message = new MailMessage
+				var message = new MailMessage
+				{
+					From = new MailAddress(_settings.Username, _settings.SenderName),
+					Subject = subject,
+					Body = body,
+					IsBodyHtml = true
+				};
+
+				message.To.Add(to);
+
+				await client.SendMailAsync(message);
+			}
+			catch (SmtpException ex)
 			{
-				From = new MailAddress(
-					_settings.SenderEmail,
-					_settings.SenderName),
-				Subject = subject,
-				Body = body,
-				IsBodyHtml = true
-			};
-
-			message.To.Add(to);
-			await client.SendMailAsync(message);
+				// Log or handle exception
+				throw new InvalidOperationException("Failed to send email. See inner exception for details.", ex);
+			}
 		}
 	}
 }

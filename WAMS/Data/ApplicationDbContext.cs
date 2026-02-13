@@ -28,7 +28,11 @@ namespace WAMS.Data
                 .WithMany(u => u.ApprovalActions)
                 .HasForeignKey(a => a.ApproverId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-        }
+			modelBuilder.Entity<User>()
+		        .HasOne(u => u.Manager)
+		        .WithMany()
+		        .HasForeignKey(u => u.ManagerId)
+		        .OnDelete(DeleteBehavior.Restrict);
+		}
     }
 }

@@ -24,7 +24,9 @@
     <style>
         body {
             min-height: 100vh;
-            background: linear-gradient(rgba(8, 15, 35, 0.45), rgba(8, 15, 35, 0.45)), url('https://img.freepik.com/premium-photo/approve-document-through-magnifying-glass_21085-88758.jpg') no-repeat center center fixed;
+            background: linear-gradient(rgba(8, 15, 35, 0.45), rgba(8, 15, 35, 0.45)), 
+                        url('https://img.freepik.com/premium-photo/approve-document-through-magnifying-glass_21085-88758.jpg') 
+                        no-repeat center center fixed;
             background-size: cover;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
@@ -36,16 +38,16 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-            .top-nav .nav-link {
-                color: #cbd5f5 !important;
-                font-weight: 500;
-                padding: 0.75rem 1rem;
-            }
+        .top-nav .nav-link {
+            color: #cbd5f5 !important;
+            font-weight: 500;
+            padding: 0.75rem 1rem;
+        }
 
-                .top-nav .nav-link:hover,
-                .top-nav .nav-link.active {
-                    color: #38bdf8 !important;
-                }
+        .top-nav .nav-link:hover,
+        .top-nav .nav-link.active {
+            color: #38bdf8 !important;
+        }
 
         .brand {
             font-weight: 700;
@@ -64,19 +66,40 @@
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
         }
 
-        /* ===== CARDS ===== */
+        /* ===== CARDS (THEME COLORED) ===== */
         .card {
-            background: rgba(255, 255, 255, 0.97);
             border-radius: 1rem;
             border: none;
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
-            transition: all 0.25s ease;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            color: #fff;
         }
 
-            .card:hover {
-                transform: translateY(-6px);
-                box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
-            }
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.35);
+        }
+
+        /* Optional color helpers (use in views if needed) */
+        .card-primary {
+            background: linear-gradient(135deg, #2563eb, #1e3a8a);
+        }
+
+        .card-success {
+            background: linear-gradient(135deg, #16a34a, #14532d);
+        }
+
+        .card-warning {
+            background: linear-gradient(135deg, #f59e0b, #92400e);
+        }
+
+        .card-danger {
+            background: linear-gradient(135deg, #dc2626, #7f1d1d);
+        }
+
+        .card-purple {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+        }
 
         /* ===== TABLE ===== */
         .table thead {
@@ -116,11 +139,6 @@
                         HR Approvals
                     </a>
                 </li>
-                @* <li class="nav-item">
-                    <a class="nav-link" asp-controller="Profile" asp-action="Index">
-                        My Profile
-                    </a>
-                </li> *@
             </ul>
 
             <span class="navbar-text text-light me-3">

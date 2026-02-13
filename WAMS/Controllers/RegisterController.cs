@@ -51,7 +51,7 @@ namespace WAMS.Controllers
 				await _userManager.AddToRoleAsync(user, "Employee");
 
 				await _signInManager.SignInAsync(user, isPersistent: false);
-				return RedirectToAction("Index", "Home");
+				return RedirectToAction("Employee", "Dashboard");
 			}
 
 			foreach (var error in result.Errors)

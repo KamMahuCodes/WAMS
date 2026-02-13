@@ -149,13 +149,22 @@ namespace WAMS.Controllers
 			if (employee == null)
 				return NotFound("Employee not found.");
 
-			// Get manager (FIXED)
-			if (string.IsNullOrEmpty(employee.ManagerId))
-				return BadRequest("Manager not assigned.");
+			// Get manager
+			User? manager = null;
 
-			var manager = await _userManager.Users
-				.FirstOrDefaultAsync(u => u.Id == employee.ManagerId);
+			if (!string.IsNullOrEmpty(employee.ManagerId))
+			{
+				manager = await _userManager.Users
+					.FirstOrDefaultAsync(u => u.Id == employee.ManagerId);
+			}
+			else
+			{
+				// fallback to default manager
+				manager = await _userManager.Users
+					.FirstOrDefaultAsync(u => u.Email == "manager@workflow.local");
+			}
 
+			
 			if (manager == null)
 				return BadRequest("Manager not found.");
 
@@ -177,22 +186,22 @@ namespace WAMS.Controllers
 			return RedirectToAction(nameof(Index));
 		}
 
-		// ============================
+		 //============================
 		// GET: LeaveRequest/Details/5
-		// ============================
-		//public async Task<IActionResult> Details(int id)
-		//{
-		//	var userId = GetUserId();
+		 //============================
+		public async Task<IActionResult> Details(int id)
+		{
+			var userId = GetUserId();
 
-		//	var request = await _context.LeaveRequests
-		//		.Include(l => l.ApprovalActions)
-		//			.ThenInclude(a => a.Approver)
-		//		.FirstOrDefaultAsync(l => l.Id == id && l.EmployeeId == userId);
+			var request = await _context.LeaveRequests
+				.Include(l => l.ApprovalActions)
+					.ThenInclude(a => a.Approver)
+				.FirstOrDefaultAsync(l => l.Id == id && l.EmployeeId == userId);
 
-		//	if (request == null)
-		//		return NotFound();
+			if (request == null)
+				return NotFound();
 
-		//	return View(request);
-		//}
+			return View(request);
+		}
 	}
 }

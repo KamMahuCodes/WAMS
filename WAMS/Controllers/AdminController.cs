@@ -72,15 +72,6 @@ namespace WAMS.Controllers
 			return View(reportData);
 		}
 
-		// ============================
-		// Settings
-		// GET: /Admin/Settings
-		// ============================
-		//public async Task<IActionResult> Settings()
-		//{
-		//	// Example: Fetch all roles or configurations
-		//	var roles = await _context.Roles.ToListAsync(); // assuming you have a Roles table
-		//	return View(roles); // Pass roles to the view
-		//}
+		
 	}
 }

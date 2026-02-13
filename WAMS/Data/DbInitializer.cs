@@ -17,14 +17,14 @@ namespace WAMS.Data
 
 			string[] roles = { "Admin", "Employee", "Manager", "HR" };
 
-			// 1. Create Roles
+			// 1. Creating Roles
 			foreach (var role in roles)
 			{
 				if (!await roleManager.RoleExistsAsync(role))
 					await roleManager.CreateAsync(new IdentityRole(role));
 			}
 
-			// 2. Seed Users (Identity-compliant)
+			// 2. Users (Identity-compliant)
 			var admin = await SeedUserAsync(userManager, "admin@workflow.local", "Admin@123", "System Administrator", "Admin");
 			var employee = await SeedUserAsync(userManager, "employee@workflow.local", "Employee@123", "Default Employee", "Employee");
 			var manager = await SeedUserAsync(userManager, "manager@workflow.local", "Manager@123", "Default Manager", "Manager");
@@ -38,7 +38,7 @@ namespace WAMS.Data
 			var carol = await SeedUserAsync(userManager, "carol.jones@example.com", "Password123!", "Carol Jones", "Employee", frank.Id);
 			var david = await SeedUserAsync(userManager, "david.brown@example.com", "Password123!", "David Brown", "Employee", frank.Id);
 
-			// 4. Seed Leave Requests
+			// 4. Leave Requests
 			if (!context.LeaveRequests.Any())
 			{
 				context.LeaveRequests.AddRange(
@@ -78,7 +78,7 @@ namespace WAMS.Data
 				await context.SaveChangesAsync();
 			}
 
-			// 5. Seed Approval Actions
+			// 5. Approval Actions
 			if (!context.ApprovalActions.Any())
 			{
 				var leaveRequests = context.LeaveRequests.ToList();

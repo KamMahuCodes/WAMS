@@ -7,8 +7,7 @@ namespace WAMS.Models
 	{
 		public int Id { get; set; }
 
-		[Required]
-		public string EmployeeId { get; set; } = null!;
+		public string? EmployeeId { get; set; } = null!;
 
 		[ForeignKey(nameof(EmployeeId))]
 		public User Employee { get; set; } = null!;

@@ -9,21 +9,21 @@
     <!-- Metrics -->
     <div class="row g-4 mb-4">
         <div class="col-md-4">
-            <div class="card p-3">
+            <div class="card card-warning p-4">
                 <h5>My Pending Requests</h5>
                 <h2 id="myPending">@Model.MyPendingRequests</h2>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="card p-3">
+            <div class="card card-success p-4">
                 <h5>My Approved Requests</h5>
                 <h2 id="myApproved">@Model.MyApprovedRequests</h2>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="card p-3">
+            <div class="card card-danger p-4">
                 <h5>My Rejected Requests</h5>
                 <h2 id="myRejected">@Model.MyRejectedRequests</h2>
             </div>
@@ -33,7 +33,7 @@
     <!-- Chart -->
     <div class="row g-4">
         <div class="col-lg-6">
-            <div class="card p-3">
+            <div class="card card-primary p-4">
                 <h5>My Request Status</h5>
                 <canvas id="employeeChart"></canvas>
             </div>
