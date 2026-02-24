@@ -104,6 +104,21 @@ namespace WAMS.Controllers
 
 		private async Task<HRDashboardViewModel> BuildHRDashboard()
 		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+			// ==============================
+			// Notifications
+			// ==============================
+			var notifications = await _context.Notifications
+				.Where(n => n.UserId == userId && !n.IsRead)
+				.OrderByDescending(n => n.CreatedAt)
+				.ToListAsync();
+
+			ViewBag.Notifications = notifications;
+
+			// ==============================
+			// Dashboard Data
+			// ==============================
 			return new HRDashboardViewModel
 			{
 				PendingHRApprovals = await _context.LeaveRequests
@@ -121,23 +136,109 @@ namespace WAMS.Controllers
 		{
 			var managerId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
+			// ==============================
+			// Notifications
+			// ==============================
+			var notifications = await _context.Notifications
+				.Where(n => n.UserId == managerId && !n.IsRead)
+				.OrderByDescending(n => n.CreatedAt)
+				.ToListAsync();
+
+			ViewBag.Notifications = notifications;
+
+			// ==============================
+			// Manager Decisions (ApprovalActions)
+			// ==============================
+			var managerActions = await _context.ApprovalActions
+				.Include(a => a.LeaveRequest)
+					.ThenInclude(l => l.Employee)
+				.Where(a => a.ApproverId == managerId)
+				.ToListAsync();
+
+			var approvedCount = managerActions.Count(a => a.Decision == ApprovalDecision.Approved);
+			var rejectedCount = managerActions.Count(a => a.Decision == ApprovalDecision.Rejected);
+			var totalDecisions = approvedCount + rejectedCount;
+
+			// ==============================
+			// Approval Rate %
+			// ==============================
+			double approvalRate = totalDecisions == 0
+				? 0
+				: (double)approvedCount / totalDecisions * 100;
+
+			// ==============================
+			// Average Decision Time (Hours)
+			// ==============================
+			var decisionTimes = managerActions
+				.Select(a => (a.ActionedAt - a.LeaveRequest.CreatedAt).TotalHours)
+				.ToList();
+
+			double avgDecisionHours = decisionTimes.Any()
+				? decisionTimes.Average()
+				: 0;
+
+			// ==============================
+			// Recent Decisions (Top 5)
+			// ==============================
+			var recent = managerActions
+				.OrderByDescending(a => a.ActionedAt)
+				.Take(5)
+				.Select(a => new RecentDecisionViewModel
+				{
+					EmployeeName = a.LeaveRequest.Employee.FullName,
+					Decision = a.Decision.ToString(),
+					Date = a.ActionedAt
+				})
+				.ToList();
+
+			// ==============================
+			// Pending Requests 
+			// ==============================
+			var pendingCount = await _context.LeaveRequests
+				.Include(l => l.Employee)
+				.CountAsync(l =>
+					l.Status == LeaveStatus.Submitted &&
+					l.Employee.ManagerId == managerId);
+
+			// ==============================
+			// Approved / Rejected
+			// ==============================
+			var approvedByManager = approvedCount;
+			var rejectedByManager = rejectedCount;
+
+			// ==============================
+			// RETURN FULL DASHBOARD MODEL
+			// ==============================
 			return new ManagerDashboardViewModel
 			{
-				PendingTeamApprovals = await _context.LeaveRequests
-					.CountAsync(l => l.Status == LeaveStatus.Submitted),
+				PendingTeamApprovals = pendingCount,
+				ApprovedByManager = approvedByManager,
+				RejectedByManager = rejectedByManager,
 
-				ApprovedByManager = await _context.LeaveRequests
-					.CountAsync(l => l.Status == LeaveStatus.ManagerApproved),
-
-				RejectedByManager = await _context.LeaveRequests
-					.CountAsync(l => l.Status == LeaveStatus.ManagerRejected)
+				// NEW METRICS
+				ApprovalRate = Math.Round(approvalRate, 1),
+				AverageDecisionHours = Math.Round(avgDecisionHours, 1),
+				RecentManagerActions = recent
 			};
 		}
 
 		private async Task<EmployeeDashboardViewModel> BuildEmployeeDashboard()
 		{
-			var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+			// ==============================
+			// Notifications
+			// ==============================
+			var notifications = await _context.Notifications
+				.Where(n => n.UserId == userId && !n.IsRead)
+				.OrderByDescending(n => n.CreatedAt)
+				.ToListAsync();
+
+			ViewBag.Notifications = notifications;
+
+			// ==============================
+			// Dashboard Data
+			// ==============================
 			return new EmployeeDashboardViewModel
 			{
 				MyPendingRequests = await _context.LeaveRequests

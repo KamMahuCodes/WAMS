@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Create Manager";
+    Layout = "~/Views/Shared/_HRLayout.cshtml";
+}
+
+<h2>Create Manager</h2>
+
+<form asp-action="CreateManager" method="post">
+
+    <div class="mb-3">
+        <label>Full Name</label>
+        <input name="fullName" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Email</label>
+        <input name="email" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Password</label>
+        <input name="password" type="password" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        Create Manager
+    </button>
+
+</form>

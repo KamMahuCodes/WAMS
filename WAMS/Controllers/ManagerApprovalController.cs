@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using WAMS.Data;
 using WAMS.Models;
-using WAMS.Services;
 
 namespace WorkflowSystem.Controllers
 {
@@ -14,16 +13,14 @@ namespace WorkflowSystem.Controllers
 	{
 		private readonly ApplicationDbContext _context;
 		private readonly UserManager<User> _userManager;
-		private readonly IEmailService _emailService;
 
 		public ManagerApprovalController(
 			ApplicationDbContext context,
-			UserManager<User> userManager,
-			IEmailService emailService)
+			UserManager<User> userManager)
 		{
 			_context = context;
 			_userManager = userManager;
-			_emailService = emailService;
+			
 		}
 
 		private string GetUserId()
@@ -32,7 +29,7 @@ namespace WorkflowSystem.Controllers
 		}
 
 		// ============================
-		// GET: /ManagerApproval
+		// GET: /ManagerApproval/ Approved
 		// ============================
 		public async Task<IActionResult> Index()
 		{
@@ -41,8 +38,47 @@ namespace WorkflowSystem.Controllers
 			var requests = await _context.LeaveRequests
 				.Include(l => l.Employee)
 				.Where(l =>
-					l.Status == LeaveStatus.Submitted &&
-					l.Employee.ManagerId == managerId)
+					l.Status == LeaveStatus.ManagerApproved && l.Status != LeaveStatus.HRApproved &&
+					l.Employee.ManagerId == managerId
+					)
+				.OrderBy(l => l.CreatedAt)
+				.ToListAsync();
+
+			return View(requests);
+		}
+
+		//=============================
+		//Get: /ManagerApproval/Rejected
+		//=============================
+		public async Task<IActionResult> Rejected()
+		{
+			var managerId = GetUserId();
+
+			var requests = await _context.LeaveRequests
+				.Include(l => l.Employee)
+				.Where(l =>
+					l.Status == LeaveStatus.ManagerRejected && 
+					l.Employee.ManagerId == managerId
+					)
+				.OrderBy(l => l.CreatedAt)
+				.ToListAsync();
+
+			return View(requests);
+		}
+
+		//=============================
+		// Get: /ManagerApproval/NewRequests
+		//=============================
+		public async Task<IActionResult> NewRequests() 
+		{
+			var managerId = GetUserId();
+
+			var requests = await _context.LeaveRequests
+				.Include(l => l.Employee)
+				.Where(l =>
+					l.Status == LeaveStatus.Submitted && l.Status != LeaveStatus.ManagerApproved &&
+					l.Employee.ManagerId == managerId  
+					)
 				.OrderBy(l => l.CreatedAt)
 				.ToListAsync();
 
@@ -114,15 +150,7 @@ namespace WorkflowSystem.Controllers
 				ActionedAt = DateTime.UtcNow
 			});
 
-			await _emailService.SendAsync(
-				hr.Email,
-				"Leave Request Awaiting HR Approval",
-				$@"
-                    <p>Dear HR,</p>
-                    <p>{request.Employee.FullName}'s leave request has been approved by their manager.</p>
-                    <p>Please log in to continue processing.</p>
-                ");
-
+			
 			await _context.SaveChangesAsync();
 			return RedirectToAction(nameof(Index));
 		}

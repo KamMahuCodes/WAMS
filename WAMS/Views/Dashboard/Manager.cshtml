@@ -9,8 +9,8 @@
     <!-- Metrics -->
     <div class="row g-4 mb-4">
         <div class="col-md-4">
-            <div class="card card-primary p-4">
-                <h5>Pending Team Requests</h5>
+            <div class="card card-warning p-4">
+                <h5>Pending Requests</h5>
                 <h2 id="pendingTeam">@Model.PendingTeamApprovals</h2>
             </div>
         </div>
@@ -28,6 +28,20 @@
                 <h2 id="rejectedMgr">@Model.RejectedByManager</h2>
             </div>
         </div>
+
+        <div class="col-md-6">
+            <div class="card card-primary p-4">
+                <h5>Approval Rate</h5>
+                <h2>@Model.ApprovalRate %</h2>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card card-dark p-4">
+                <h5>Avg Decision Time</h5>
+                <h2>@Model.AverageDecisionHours hrs</h2>
+            </div>
+        </div>
     </div>
 
     <!-- Chart -->
@@ -35,7 +49,50 @@
         <div class="col-lg-6">
             <div class="card card-primary p-4">
                 <h5>Manager Decisions</h5>
-                <canvas id="managerChart"></canvas>
+                <div style="height:300px;">
+                    <canvas id="managerChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm p-4">
+                <h5>Recent Decisions</h5>
+
+                @if (Model.RecentManagerActions == null || !Model.RecentManagerActions.Any())
+                {
+                    <div class="alert alert-info mt-3">
+                        No recent decisions found.
+                    </div>
+                }
+                else
+                {
+                    <table class="table table-hover mt-3">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Decision</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.RecentManagerActions)
+                            {
+                                <tr>
+                                    <td>@item.EmployeeName</td>
+                                    <td>
+                                        <span class="badge bg-@(item.Decision == "Approved" ? "success" : "danger")">
+                                            @item.Decision
+                                        </span>
+                                    </td>
+                                    <td>@item.Date.ToString("dd MMM yyyy HH:mm")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
             </div>
         </div>
     </div>
@@ -43,23 +100,42 @@
 
 @section Scripts {
     <script>
-        new CountUp('pendingTeam', @Model.PendingTeamApprovals).start();
-        new CountUp('approvedMgr', @Model.ApprovedByManager).start();
-        new CountUp('rejectedMgr', @Model.RejectedByManager).start();
+        document.addEventListener("DOMContentLoaded", function () {
 
-        new Chart(document.getElementById('managerChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Approved', 'Rejected', 'Pending'],
-                datasets: [{
-                    data: [
-                        @Model.ApprovedByManager,
-                        @Model.RejectedByManager,
-                        @Model.PendingTeamApprovals
-                    ],
-                    backgroundColor: ['#28a745','#dc3545','#ffc107']
-                }]
-            }
+            document.getElementById('pendingTeam').textContent = @Model.PendingTeamApprovals;
+            document.getElementById('approvedMgr').textContent = @Model.ApprovedByManager;
+            document.getElementById('rejectedMgr').textContent = @Model.RejectedByManager;
+
+            const ctx = document.getElementById('managerChart');
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Approved', 'Rejected', 'Pending'],
+                    datasets: [{
+                        data: [
+                            @Model.ApprovedByManager,
+                            @Model.RejectedByManager,
+                            @Model.PendingTeamApprovals
+                        ],
+                        backgroundColor: [
+                            '#28a745',
+                            '#dc3545',
+                            '#ffc107'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
         });
     </script>
 }

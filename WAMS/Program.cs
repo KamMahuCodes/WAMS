@@ -1,15 +1,16 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WAMS.Data;
+using WAMS.Hubs;
 using WAMS.Models;
-using WAMS.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // =====================
 // Services
 // =====================
-
+builder.Services.AddSignalR();
+//builder.Services.AddTransient<IEmailService, SmtpEmailService>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
@@ -42,10 +43,10 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 // Email services
-builder.Services.Configure<EmailSettings>(
-	builder.Configuration.GetSection("EmailSettings"));
+//builder.Services.Configure<EmailSettings>(
+//	builder.Configuration.GetSection("EmailSettings"));
 
-builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+//builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
 var app = builder.Build();
 
@@ -82,5 +83,6 @@ app.MapControllerRoute(
 	pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();

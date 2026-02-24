@@ -63,7 +63,7 @@ namespace WAMS.Data
 						EmployeeId = carol.Id,
 						StartDate = DateTime.UtcNow.AddDays(7),
 						EndDate = DateTime.UtcNow.AddDays(9),
-						Reason = "Conference attendance",
+						Reason = "Conference attendance", 
 						Status = LeaveStatus.ManagerApproved
 					},
 					new EmployeeRequest

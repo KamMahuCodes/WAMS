@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.AspNetCore.SignalR;
+using WAMS.Hubs;
 using WAMS.Data;
 using WAMS.Models;
-using WAMS.Services;
 
 namespace WAMS.Controllers
 {
@@ -14,16 +15,19 @@ namespace WAMS.Controllers
 	{
 		private readonly ApplicationDbContext _context;
 		private readonly UserManager<User> _userManager;
-		private readonly IEmailService _emailService;
+		
+		private readonly IHubContext<NotificationHub> _hubContext;
 
 		public LeaveRequestController(
 			ApplicationDbContext context,
 			UserManager<User> userManager,
-			IEmailService emailService)
+			
+			IHubContext<NotificationHub> hubContext)
 		{
 			_context = context;
 			_userManager = userManager;
-			_emailService = emailService;
+			
+			_hubContext = hubContext;
 		}
 
 		private string GetUserId()
@@ -171,17 +175,21 @@ namespace WAMS.Controllers
 			// Update status
 			request.Status = LeaveStatus.Submitted;
 
-			// Notify manager
-			await _emailService.SendAsync(
-				manager.Email,
-				"New Leave Request Submitted",
-				$@"
-                    <p>Dear {manager.FullName},</p>
-                    <p>{employee.FullName} has submitted a leave request.</p>
-                    <p><strong>Dates:</strong> {request.StartDate:d} - {request.EndDate:d}</p>
-                    <p>Please log in to review and approve.</p>"
-			);
+			// Create DB notification
+			var notification = new Notification
+			{
+				UserId = manager.Id,
+				Message = $"{employee.FullName} submitted a leave request from {request.StartDate:d} to {request.EndDate:d}"
+			};
 
+			_context.Notifications.Add(notification);
+			await _context.SaveChangesAsync();
+
+			// Push real-time notification
+			await _hubContext.Clients.User(manager.Id)
+				.SendAsync("ReceiveNotification", notification.Message);
+
+			
 			await _context.SaveChangesAsync();
 			return RedirectToAction(nameof(Index));
 		}

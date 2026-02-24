@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Create Employee";
+    Layout = "~/Views/Shared/_HRLayout.cshtml";
+}
+
+<h2>Create Employee</h2>
+
+<form asp-action="CreateEmployee" method="post">
+
+    <div class="mb-3">
+        <label>Full Name</label>
+        <input name="fullName" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Email</label>
+        <input name="email" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Password</label>
+        <input name="password" type="password" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Assign Manager</label>
+        <select name="managerId" class="form-control" required>
+            <option value="">-- Select Manager --</option>
+            @foreach (var manager in ViewBag.Managers)
+            {
+                <option value="@manager.Id">
+                    @manager.FullName (@manager.Email)
+                </option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Create Employee
+    </button>
+
+</form>

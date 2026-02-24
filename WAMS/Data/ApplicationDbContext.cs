@@ -12,8 +12,9 @@ namespace WAMS.Data
         public DbSet<User>? Users { get; set; }
         public DbSet<EmployeeRequest>? LeaveRequests { get; set; }
         public DbSet<ApprovalAction>? ApprovalActions { get; set; }
+		public DbSet<Notification> Notifications { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 

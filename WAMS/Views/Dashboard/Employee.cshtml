@@ -6,8 +6,9 @@
 
 <div class="container-fluid p-4">
 
-    <!-- Metrics -->
+    <!-- METRICS -->
     <div class="row g-4 mb-4">
+
         <div class="col-md-4">
             <div class="card card-warning p-4">
                 <h5>My Pending Requests</h5>
@@ -28,38 +29,113 @@
                 <h2 id="myRejected">@Model.MyRejectedRequests</h2>
             </div>
         </div>
+
+        <div class="col-md-6">
+            <div class="card card-primary p-4">
+                <h5>Approval Rate</h5>
+                <h2>@Model.ApprovalRate %</h2>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Chart -->
+    <!-- CHART -->
     <div class="row g-4">
         <div class="col-lg-6">
             <div class="card card-primary p-4">
                 <h5>My Request Status</h5>
-                <canvas id="employeeChart"></canvas>
+                <div style="height:300px;">
+                    <canvas id="employeeChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- RECENT REQUESTS -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm p-4">
+                <h5>Recent Requests</h5>
+
+                @if (Model.RecentRequests == null || !Model.RecentRequests.Any())
+                {
+                    <div class="alert alert-info mt-3">
+                        No recent requests found.
+                    </div>
+                }
+                else
+                {
+                    <table class="table table-hover mt-3">
+                        <thead>
+                            <tr>
+                                <th>Request Type</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.RecentRequests)
+                            {
+                                <tr>
+                                    <td>@item.EmployeeName</td>
+                                    <td>
+                                        <span class="badge bg-@(
+                                              item.Decision == "Approved" ? "success" :
+                                              item.Decision == "Rejected" ? "danger" :
+                                              "warning")">
+                                            @item.Decision
+                                        </span>
+                                    </td>
+                                    <td>@item.Date.ToString("dd MMM yyyy HH:mm")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+
 </div>
 
 @section Scripts {
     <script>
-        new CountUp('myPending', @Model.MyPendingRequests).start();
-        new CountUp('myApproved', @Model.MyApprovedRequests).start();
-        new CountUp('myRejected', @Model.MyRejectedRequests).start();
+        document.addEventListener("DOMContentLoaded", function () {
 
-        new Chart(document.getElementById('employeeChart'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Approved', 'Rejected', 'Pending'],
-                datasets: [{
-                    data: [
-                        @Model.MyApprovedRequests,
-                        @Model.MyRejectedRequests,
-                        @Model.MyPendingRequests
-                    ],
-                    backgroundColor: ['#28a745','#dc3545','#ffc107']
-                }]
-            }
+                    document.getElementById('myPending').textContent = @Model.MyPendingRequests;
+        document.getElementById('myApproved').textContent = @Model.MyApprovedRequests;
+        document.getElementById('myRejected').textContent = @Model.MyRejectedRequests;
+
+            const ctx = document.getElementById('employeeChart');
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Approved', 'Rejected', 'Pending'],
+                    datasets: [{
+                        data: [
+                            @Model.MyApprovedRequests,
+                            @Model.MyRejectedRequests,
+                            @Model.MyPendingRequests
+                        ],
+                        backgroundColor: [
+                            '#28a745',
+                            '#dc3545',
+                            '#ffc107'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
         });
     </script>
 }

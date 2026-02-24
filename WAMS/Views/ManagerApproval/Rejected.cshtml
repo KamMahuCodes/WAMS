@@ -1,17 +1,17 @@
 ﻿@model IEnumerable<WAMS.Models.EmployeeRequest>
 
 @{
-	ViewData["Title"] = "Approved Requests";
+	ViewData["Title"] = "Rejected Requests";
 	Layout = "~/Views/Shared/_ManagerLayout.cshtml";
 	
 }
 
-<h2 class="mb-4">Approved</h2>
+<h2 class="mb-4">Rejected</h2>
 
 @if (!Model.Any())
 {
 	<div class="alert alert-info">
-		No leave requests approved yet.
+		No leave requests rejected yet.
 	</div>
 }
 else

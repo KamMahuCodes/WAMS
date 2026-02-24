@@ -1,69 +1,145 @@
 ﻿@model WAMS.Models.ViewModels.HRDashboardViewModel
 @{
-	ViewData["Title"] = "HR Dashboard";
-	Layout = "~/Views/Shared/HRLayout.cshtml";
+    ViewData["Title"] = "HR Dashboard";
+    Layout = "~/Views/Shared/HRLayout.cshtml";
 }
 
 <div class="container-fluid p-4">
 
-	<!-- METRICS -->
-	<div class="row g-4 mb-4">
-		<div class="col-md-4">
-			<div class="card card-warning p-4">
+    <!-- METRICS -->
+    <div class="row g-4 mb-4">
 
-				<h5>Pending HR Approvals</h5>
-				<h2 id="pendingHR">@Model.PendingHRApprovals</h2>
-			</div>
-		</div>
+        <div class="col-md-4">
+            <div class="card card-warning p-4">
+                <h5>Pending HR Approvals</h5>
+                <h2 id="pendingHR">@Model.PendingHRApprovals</h2>
+            </div>
+        </div>
 
-		<div class="col-md-4">
-			<div class="card card-success p-4">
+        <div class="col-md-4">
+            <div class="card card-success p-4">
+                <h5>Approved by HR</h5>
+                <h2 id="approvedHR">@Model.ApprovedByHR</h2>
+            </div>
+        </div>
 
-				<h5>Approved by HR</h5>
-				<h2 id="approvedHR">@Model.ApprovedByHR</h2>
-			</div>
-		</div>
+        <div class="col-md-4">
+            <div class="card card-danger p-4">
+                <h5>Rejected by HR</h5>
+                <h2 id="rejectedHR">@Model.RejectedByHR</h2>
+            </div>
+        </div>
 
-		<div class="col-md-4">
-			<div class="card card-danger p-4">
+        <div class="col-md-6">
+            <div class="card card-primary p-4">
+                <h5>Approval Rate</h5>
+                <h2>@Model.ApprovalRate %</h2>
+            </div>
+        </div>
 
-				<h5>Rejected by HR</h5>
-				<h2 id="rejectedHR">@Model.RejectedByHR</h2>
-			</div>
-		</div>
-	</div>
+        <div class="col-md-6">
+            <div class="card card-dark p-4">
+                <h5>Avg Decision Time</h5>
+                <h2>@Model.AverageDecisionHours hrs</h2>
+            </div>
+        </div>
 
-	<!-- CHART -->
-	<div class="row g-4">
-		<div class="col-lg-6">
-			<div class="card card-primary p-4">
+    </div>
 
-				<h5>HR Decisions Overview</h5>
-				<canvas id="hrChart"></canvas>
-			</div>
-		</div>
-	</div>
+    <!-- CHART -->
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card card-primary p-4">
+                <h5>HR Decisions Overview</h5>
+                <div style="height:300px;">
+                    <canvas id="hrChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECENT DECISIONS -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm p-4">
+                <h5>Recent HR Decisions</h5>
+
+                @if (Model.RecentHRDecisions == null || !Model.RecentHRDecisions.Any())
+                {
+                    <div class="alert alert-info mt-3">
+                        No recent decisions found.
+                    </div>
+                }
+                else
+                {
+                    <table class="table table-hover mt-3">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Decision</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.RecentHRDecisions)
+                            {
+                                <tr>
+                                    <td>@item.EmployeeName</td>
+                                    <td>
+                                        <span class="badge bg-@(item.Decision == "Approved" ? "success" : "danger")">
+                                            @item.Decision
+                                        </span>
+                                    </td>
+                                    <td>@item.Date.ToString("dd MMM yyyy HH:mm")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+
 </div>
 
 @section Scripts {
-	<script>
-		new CountUp('pendingHR', @Model.PendingHRApprovals).start();
-		new CountUp('approvedHR', @Model.ApprovedByHR).start();
-		new CountUp('rejectedHR', @Model.RejectedByHR).start();
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
 
-		new Chart(document.getElementById('hrChart'), {
-			type: 'doughnut',
-			data: {
-				labels: ['Approved', 'Rejected', 'Pending'],
-				datasets: [{
-					data: [
-						@Model.ApprovedByHR,
-						@Model.RejectedByHR,
-						@Model.PendingHRApprovals
-					],
-					backgroundColor: ['#198754', '#dc3545', '#ffc107']
-				}]
-			}
-		});
-	</script>
+                     document.getElementById('pendingHR').textContent = @Model.PendingHRApprovals;
+        document.getElementById('approvedHR').textContent = @Model.ApprovedByHR;
+        document.getElementById('rejectedHR').textContent = @Model.RejectedByHR;
+
+            const ctx = document.getElementById('hrChart');
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Approved', 'Rejected', 'Pending'],
+                    datasets: [{
+                        data: [
+                            @Model.ApprovedByHR,
+                            @Model.RejectedByHR,
+                            @Model.PendingHRApprovals
+                        ],
+                        backgroundColor: [
+                            '#28a745',
+                            '#dc3545',
+                            '#ffc107'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+        });
+    </script>
 }
