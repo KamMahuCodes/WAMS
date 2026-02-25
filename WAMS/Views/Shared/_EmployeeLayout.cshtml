@@ -11,20 +11,20 @@
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Site CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
     <!-- CountUp -->
     <script src="https://cdn.jsdelivr.net/npm/countup.js@2.4.0/dist/countUp.min.js"></script>
 
     <style>
         body {
             min-height: 100vh;
-            background: linear-gradient(rgba(8, 15, 35, 0.45), rgba(8, 15, 35, 0.45)), url('https://img.freepik.com/premium-photo/approve-document-through-magnifying-glass_21085-88758.jpg') no-repeat center center fixed;
+            background: linear-gradient(rgba(8,15,35,0.45), rgba(8,15,35,0.45)), url('https://img.freepik.com/premium-photo/approve-document-through-magnifying-glass_21085-88758.jpg') no-repeat center center fixed;
             background-size: cover;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
@@ -33,7 +33,7 @@
         .top-nav {
             backdrop-filter: blur(10px);
             background: rgba(15, 23, 42, 0.85);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
             .top-nav .nav-link {
@@ -58,27 +58,26 @@
         }
 
         .content-glass {
-            background: rgba(255, 255, 255, 0.88);
+            background: rgba(255,255,255,0.88);
             border-radius: 1.25rem;
             padding: 2rem;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.35);
         }
 
         /* ===== CARDS ===== */
         .card {
             border-radius: 1rem;
             border: none;
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
             color: #fff;
         }
 
             .card:hover {
                 transform: translateY(-6px);
-                box-shadow: 0 25px 45px rgba(0, 0, 0, 0.35);
+                box-shadow: 0 25px 45px rgba(0,0,0,0.35);
             }
 
-        /* Optional color helpers (use in views if needed) */
         .card-primary {
             background: linear-gradient(135deg, #2563eb, #1e3a8a);
         }
@@ -114,141 +113,94 @@
 </head>
 
 <body>
-
-    <!-- ===== TOP NAVBAR ===== -->
     <nav class="navbar navbar-expand-lg navbar-dark top-nav px-4">
-        <a class="navbar-brand brand" asp-controller="Dashboard" asp-action="Index">
-            WAMS Employee
-        </a>
+        <a class="navbar-brand brand" asp-controller="Dashboard" asp-action="Index">WAMS Employee</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#employeeNav">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="employeeNav">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="Dashboard" asp-action="Index">
-                        My Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="LeaveRequest" asp-action="Create">
-                        Request Leave
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="LeaveRequest" asp-action="Index">
-                        My Requests
-                    </a>
-                </li>
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" asp-controller="Dashboard" asp-action="Index">My Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" asp-controller="LeaveRequest" asp-action="Create">Request Leave</a></li>
+                <li class="nav-item"><a class="nav-link" asp-controller="LeaveRequest" asp-action="Index">My Requests</a></li>
             </ul>
 
-            <li class="nav-item dropdown">
-                <a class="nav-link position-relative" id="notificationDropdown" data-bs-toggle="dropdown" href="#">
-                    <i class="bi bi-bell"></i>
-                    <span id="notificationCount"
-                          class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        0
-                    </span>
-                </a>
+            <ul class="navbar-nav align-items-center">
+                <li class="nav-item dropdown me-3">
+                    <a class="nav-link position-relative" id="notificationDropdown" data-bs-toggle="dropdown" href="#">
+                        <i class="bi bi-bell fs-5"></i>
+                        <span id="notificationCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none;">0</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" id="notificationList" style="width:300px; max-height:400px; overflow-y:auto;">
+                        <li class="dropdown-header">Notifications</li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li class="text-muted text-center small">No notifications</li>
+                    </ul>
+                </li>
 
-                <ul class="dropdown-menu dropdown-menu-end"
-                    id="notificationList"
-                    style="width:300px; max-height:400px; overflow-y:auto;">
-                    <li class="dropdown-header">Notifications</li>
-                    <li><hr class="dropdown-divider"></li>
-                </ul>
-            </li>
+                <li class="nav-item">
+                    <span class="navbar-text text-light me-3">Welcome, <strong>@User.Identity?.Name</strong></span>
+                </li>
 
-            <span class="navbar-text text-light me-3">
-                Welcome, <strong>@User.Identity?.Name</strong>
-            </span>
-
-            <form asp-controller="Login" asp-action="Logout" method="post">
-                <button class="btn btn-outline-info btn-sm">
-                    Logout
-                </button>
-            </form>
+                <li class="nav-item">
+                    <form asp-controller="Login" asp-action="Logout" method="post">
+                        <button class="btn btn-outline-info btn-sm">Logout</button>
+                    </form>
+                </li>
+            </ul>
         </div>
     </nav>
 
-    <!-- ===== PAGE CONTENT ===== -->
     <main class="page-wrapper">
         <div class="content-glass">
             @RenderBody()
         </div>
-
-        <footer class="text-center mt-4">
-            <small>© 2026 WAMS · Employee Portal</small>
-        </footer>
     </main>
 
-    <!-- Bootstrap JS -->
+    <footer class="text-center mt-4">
+        <small>© 2026 WAMS · Employee Portal</small>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
     <script>
         const existingNotifications = @Html.Raw(Json.Serialize(ViewBag.Notifications ?? new List<object>()));
-
         const notificationList = document.getElementById("notificationList");
         const notificationCount = document.getElementById("notificationCount");
-
+        const dropdown = document.getElementById("notificationDropdown");
         let count = 0;
 
+        function updateBadge() {
+            notificationCount.style.display = count > 0 ? "inline-block" : "none";
+            notificationCount.textContent = count;
+        }
+
         function addNotification(message, increment = true) {
-
-            if (increment) {
-                count++;
-                notificationCount.textContent = count;
+            if (notificationList.innerText.includes("No notifications")) {
+                notificationList.innerHTML = `<li class="dropdown-header">Notifications</li><li><hr class="dropdown-divider"></li>`;
             }
-
+            if (increment) { count++; updateBadge(); }
             const li = document.createElement("li");
             li.classList.add("dropdown-item");
             li.textContent = message;
-
             notificationList.appendChild(li);
-
-            showToast(message);
         }
 
-        function showToast(message) {
-            const toastHtml = `
-                <div class="toast align-items-center text-bg-primary border-0 show position-fixed bottom-0 end-0 m-3">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            ${message}
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                            onclick="this.closest('.toast').remove()"></button>
-                    </div>
-                </div>`;
-
-            document.body.insertAdjacentHTML('beforeend', toastHtml);
-
-            setTimeout(() => {
-                const toast = document.querySelector('.toast');
-                if (toast) toast.remove();
-            }, 5000);
-        }
-
-        // ✅ Load existing unread notifications from DB
         if (existingNotifications.length > 0) {
-
-            existingNotifications.forEach(n => {
-                addNotification(n.message, true);
-            });
+            existingNotifications.forEach(n => addNotification(n.message, true));
         }
 
-        // ✅ SignalR real-time connection
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/notificationHub")
-            .build();
-
-        connection.on("ReceiveNotification", function (message) {
-            addNotification(message, true);
-        });
-
+        const connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub").build();
+        connection.on("ReceiveNotification", function(message) { addNotification(message, true); });
         connection.start();
+
+        dropdown.addEventListener("click", function() { count = 0; updateBadge(); });
+        updateBadge();
     </script>
+
     @RenderSection("Scripts", required: false)
 </body>
 </html>

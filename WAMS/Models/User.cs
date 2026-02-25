@@ -16,6 +16,9 @@ namespace WAMS.Models
 		[ForeignKey(nameof(ManagerId))]
 		public User? Manager { get; set; }
 
+		public string? Department { get; set; }
+		public int AnnualLeaveBalance { get; set; } = 20;
+
 		// Navigation
 		public ICollection<EmployeeRequest> LeaveRequests { get; set; } = new List<EmployeeRequest>();
 		public ICollection<ApprovalAction> ApprovalActions { get; set; } = new List<ApprovalAction>();
