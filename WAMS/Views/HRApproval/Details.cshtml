@@ -10,7 +10,7 @@
 <div class="card card-primary mb-3">
 	<div class="card-body">
 		<p><strong>Employee:</strong> @Model.Employee?.FullName</p>
-		<p><strong>Email:</strong> @Model.Employee.Email</p>
+		<p><strong>Email:</strong> @Model.Employee?.Email</p>
 		<p><strong>Start Date:</strong> @Model.StartDate.ToShortDateString()</p>
 		<p><strong>End Date:</strong> @Model.EndDate.ToShortDateString()</p>
 		<p><strong>Status:</strong> @Model.Status</p>
@@ -30,6 +30,7 @@
 		<thead class="table-light">
 			<tr>
 				<th>Approver</th>
+				<th>Department</th>
 				<th>Decision</th>
 				<th>Comment</th>
 				<th>Date</th>
@@ -39,7 +40,8 @@
 			@foreach (var action in Model.ApprovalActions)
 			{
 				<tr>
-					<td>@action.Approver.FullName</td>
+					<td>@action.Approver?.FullName</td>
+					<td>@action.Approver?.Department</td>
 					<td>@action.Decision</td>
 					<td>@action.Comment</td>
 					<td>@action.ActionedAt.ToLocalTime()</td>

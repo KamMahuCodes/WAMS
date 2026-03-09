@@ -30,6 +30,8 @@ namespace WAMS.Models
 
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+		public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
 		// Navigation
 		public ICollection<ApprovalAction> ApprovalActions { get; set; } = new List<ApprovalAction>();
 	}

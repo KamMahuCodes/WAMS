@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using WAMS.Data;
+using WAMS.Hubs;
 using WAMS.Models;
 
 namespace WAMS.Controllers
@@ -13,13 +15,15 @@ namespace WAMS.Controllers
 	{
 		private readonly ApplicationDbContext _context;
 		private readonly UserManager<User> _userManager;
-		
+		private readonly IHubContext<NotificationHub> _hubContext;
+
 		public HRApprovalController(
 			ApplicationDbContext context,
-			UserManager<User> userManager)
+			UserManager<User> userManager, IHubContext<NotificationHub> hubContext)
 		{
 			_context = context;
 			_userManager = userManager;
+			_hubContext = hubContext;
 		}
 
 		private string GetUserId()
@@ -99,9 +103,20 @@ namespace WAMS.Controllers
 				ActionedAt = DateTime.UtcNow
 			});
 
-			
+			// Notify employee
+			var employee = request.Employee;
+			var message = $"Your leave request ({request.StartDate:d} - {request.EndDate:d}) has been approved by HR.";
+			_context.Notifications.Add(new Notification
+			{
+				UserId = employee.Id,
+				Message = message
+			});
+
+			await _hubContext.Clients.User(employee.Id).SendAsync("ReceiveNotification", message);
+
 			await _context.SaveChangesAsync();
 			return RedirectToAction(nameof(Index));
+
 		}
 
 		// ============================
@@ -138,7 +153,20 @@ namespace WAMS.Controllers
 				ActionedAt = DateTime.UtcNow
 			});
 
-			
+			// Notify Employee
+			var hrUsers = await _userManager.GetUsersInRoleAsync("HR");
+			foreach (var hr in hrUsers)
+			{
+				var message = $"Manager rejected leave request for {request.Employee.FullName} ({request.StartDate:d} - {request.EndDate:d})";
+				_context.Notifications.Add(new Notification
+				{
+					UserId = hr.Id,
+					Message = message
+				});
+
+				await _hubContext.Clients.User(hr.Id).SendAsync("ReceiveNotification", message);
+			}
+
 			await _context.SaveChangesAsync();
 			return RedirectToAction(nameof(Index));
 		}

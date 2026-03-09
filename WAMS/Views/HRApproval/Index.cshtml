@@ -11,6 +11,7 @@
 	<thead class="table-light">
 		<tr>
 			<th>Employee</th>
+			<th>Department</th>
 			<th>Start Date</th>
 			<th>End Date</th>
 			<th>Submitted On</th>
@@ -23,6 +24,7 @@
 	{
 		<tr>
 			<td>@item.Employee?.FullName</td>
+            <td>@item.Employee?.Department</td>
 			<td>@item.StartDate.ToShortDateString()</td>
 			<td>@item.EndDate.ToShortDateString()</td>
 			<td>@item.CreatedAt.ToLocalTime()</td>

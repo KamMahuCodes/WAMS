@@ -104,31 +104,82 @@ namespace WAMS.Controllers
 
 		private async Task<HRDashboardViewModel> BuildHRDashboard()
 		{
-			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			var hrId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
 			// ==============================
 			// Notifications
 			// ==============================
 			var notifications = await _context.Notifications
-				.Where(n => n.UserId == userId && !n.IsRead)
+				.Where(n => n.UserId == hrId && !n.IsRead)
 				.OrderByDescending(n => n.CreatedAt)
 				.ToListAsync();
 
 			ViewBag.Notifications = notifications;
 
 			// ==============================
-			// Dashboard Data
+			// HR Decisions (ApprovalActions)
+			// ==============================
+			var hrActions = await _context.ApprovalActions
+				.Include(a => a.LeaveRequest)
+					.ThenInclude(l => l.Employee)
+				.Where(a => a.ApproverId == hrId)
+				.ToListAsync();
+
+			var approvedCount = hrActions.Count(a => a.Decision == ApprovalDecision.Approved);
+			var rejectedCount = hrActions.Count(a => a.Decision == ApprovalDecision.Rejected);
+			var totalDecisions = approvedCount + rejectedCount;
+
+			// ==============================
+			// Approval Rate %
+			// ==============================
+			double approvalRate = totalDecisions == 0
+				? 0
+				: (double)approvedCount / totalDecisions * 100;
+
+			// ==============================
+			// Average Decision Time
+			// ==============================
+			var decisionTimes = hrActions
+				.Select(a => (a.ActionedAt - a.LeaveRequest.CreatedAt).TotalHours)
+				.ToList();
+
+			double avgDecisionHours = decisionTimes.Any()
+				? decisionTimes.Average()
+				: 0;
+
+			// ==============================
+			// Recent Decisions
+			// ==============================
+			var recent = hrActions
+				.OrderByDescending(a => a.ActionedAt)
+				.Take(5)
+				.Select(a => new RecentDecisionViewModel
+				{
+					EmployeeName = a.LeaveRequest.Employee.FullName,
+					Decision = a.Decision.ToString(),
+					Date = a.ActionedAt
+				})
+				.ToList();
+
+			// ==============================
+			// Pending HR Approvals
+			// ==============================
+			var pendingHR = await _context.LeaveRequests
+				.CountAsync(l => l.Status == LeaveStatus.ManagerApproved);
+
+			// ==============================
+			// Return Dashboard
 			// ==============================
 			return new HRDashboardViewModel
 			{
-				PendingHRApprovals = await _context.LeaveRequests
-					.CountAsync(l => l.Status == LeaveStatus.ManagerApproved),
+				PendingHRApprovals = pendingHR,
+				ApprovedByHR = approvedCount,
+				RejectedByHR = rejectedCount,
 
-				ApprovedByHR = await _context.LeaveRequests
-					.CountAsync(l => l.Status == LeaveStatus.HRApproved),
-
-				RejectedByHR = await _context.LeaveRequests
-					.CountAsync(l => l.Status == LeaveStatus.HRRejected)
+				// Same metrics as manager
+				ApprovalRate = Math.Round(approvalRate, 1),
+				AverageDecisionHours = Math.Round(avgDecisionHours, 1),
+				RecentHRDecisions = recent
 			};
 		}
 
@@ -237,20 +288,69 @@ namespace WAMS.Controllers
 			ViewBag.Notifications = notifications;
 
 			// ==============================
-			// Dashboard Data
+			// Employee Leave Requests
+			// ==============================
+			var myRequests = await _context.LeaveRequests
+				.Include(l => l.Employee)
+				.Where(l => l.EmployeeId == userId)
+				.ToListAsync();
+
+			var pendingCount = myRequests.Count(l => l.Status == LeaveStatus.Submitted);
+			var approvedCount = myRequests.Count(l => l.Status == LeaveStatus.HRApproved);
+			var rejectedCount = myRequests.Count(l =>
+				l.Status == LeaveStatus.ManagerRejected ||
+				l.Status == LeaveStatus.HRRejected);
+
+			var totalProcessed = approvedCount + rejectedCount;
+
+			// ==============================
+			// Approval Rate
+			// ==============================
+			double approvalRate = totalProcessed == 0
+				? 0
+				: (double)approvedCount / totalProcessed * 100;
+
+			// ==============================
+			// Average Processing Time
+			// ==============================
+			var decisionTimes = myRequests
+				.Where(l => l.Status == LeaveStatus.HRApproved ||
+							l.Status == LeaveStatus.ManagerRejected ||
+							l.Status == LeaveStatus.HRRejected)
+				.Select(l => (l.UpdatedAt - l.CreatedAt).TotalHours)
+				.ToList();
+
+			double avgDecisionHours = decisionTimes.Any()
+				? decisionTimes.Average()
+				: 0;
+
+			// ==============================
+			// Recent Requests
+			// ==============================
+			var recent = myRequests
+				.OrderByDescending(l => l.CreatedAt)
+				.Take(5)
+				.Select(l => new RecentDecisionViewModel
+				{
+					EmployeeName = l.Employee.FullName,
+					Decision = l.Status.ToString(),
+					Date = l.CreatedAt
+				})
+				.ToList();
+
+			// ==============================
+			// Return Dashboard Model
 			// ==============================
 			return new EmployeeDashboardViewModel
 			{
-				MyPendingRequests = await _context.LeaveRequests
-					.CountAsync(l => l.EmployeeId == userId && l.Status == LeaveStatus.Submitted),
+				MyPendingRequests = pendingCount,
+				MyApprovedRequests = approvedCount,
+				MyRejectedRequests = rejectedCount,
 
-				MyApprovedRequests = await _context.LeaveRequests
-					.CountAsync(l => l.EmployeeId == userId && l.Status == LeaveStatus.HRApproved),
+				ApprovalRate = Math.Round(approvalRate, 1),
+				AverageDecisionHours = Math.Round(avgDecisionHours, 1),
 
-				MyRejectedRequests = await _context.LeaveRequests
-					.CountAsync(l => l.EmployeeId == userId &&
-						(l.Status == LeaveStatus.ManagerRejected ||
-						 l.Status == LeaveStatus.HRRejected))
+				RecentRequests = recent
 			};
 		}
 
